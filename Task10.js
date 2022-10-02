@@ -19,9 +19,11 @@ function onSubmit(e) {
 
         userList.appendChild(li);
 
-        //storing data in local storage
-        localStorage.setItem("Username", nameInput.value);
-        localStorage.setItem("Email", emailInput.value);
+        localStorage.setItem("userDetails", seri);
+
+
+        let deseri = JSON.parse(localStorage.getItem("userDetails"));
+        console.log(deseri);
 
         //clearing fields
         nameInput.value = "";
