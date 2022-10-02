@@ -19,17 +19,17 @@ function onSubmit(e) {
 
         userList.appendChild(li);
 
-        localStorage.setItem("userDetails", seri);
+        const userDetails = {
+            Name: nameInput.value,
+            Email: emailInput.value
+        }
+       
+        //Representing objects as string->serialization
 
+        let seri = JSON.stringify(userDetails);
 
-        let deseri = JSON.parse(localStorage.getItem("userDetails"));
-        console.log(deseri);
-
-        //clearing fields
-        nameInput.value = "";
-        emailInput.value = "";
-
-
-
+        //storing all input data in local storage
+        localStorage.setItem(userDetails.Email , seri);
     }
+    
 }
