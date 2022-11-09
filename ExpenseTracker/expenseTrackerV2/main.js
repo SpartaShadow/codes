@@ -1,123 +1,91 @@
 "use strict";
-const button = document.getElementById("btn");
-const amount = document.getElementById("amount");
-const description = document.getElementById("desc");
-const category = document.getElementById("category");
-const form = document.getElementById("expForm");
-const listDetails = document.getElementById("listDetails");
+//form.addEventListener("submit", onClick);
+async function onClick(event)
+{
+   event.preventDefault();
+   const amount=event.target.amot.value;
+   const description=event.target.desci.value;
+   const category=event.target.cati.value;
+   let obj={
+       amount,
+       description,
+       category
+   }
 
-
-form.addEventListener("submit", onClick);
-
-function onClick(e) {
-    e.preventDefault();
-    if (amount.value === "" || description.value === "") {
-        alert("Please Enter All Fields");
+    try
+    {
+       const response=await axios.post("https://crudcrud.com/api/5a65cc46a535451b91359d56767c56fb/expense",obj)
+       console.log(response.data);
+      showUserOnScreen(response.data);
     }
-    else {
-        const expenseDetails = {
-            expenseAmount: amount.value,
-            expenseDescription: description.value,
-            expenseCategory: category.value
-        }
-        //clearing fields
-        amount.value = "";
-        description.value="";
-        category.value="";
+    catch(err)
+    {
 
-        
-       axios.post("https://crudcrud.com/api/5a65cc46a535451b91359d56767c56fb/expenseData", expenseDetails)
-       .then((response) => {
-        console.log(response);
-        showDetailsOnScreen(response.data);
-        //console.log(response)
-    })
-       .catch((err) => console.log(err))
-
-
-        // //Representing objects as string: Serialization
-
-        // let seri = JSON.stringify(expenseDetails);
-
-        // //storing input data in local storage
-
-        // localStorage.setItem(expenseDetails.expenseAmount, seri);
-        // showDetailsOnScreen(expenseDetails);
+        document.body.innerHTML=document.body.innerHTML+"<h4>Something wrong on post</h4>"
+        console.log(err);
+    }
     }
 
+function showUserOnScreen(user){
+    document.getElementById('amt').value = '';
+    document.getElementById('desc').value = '';
+    document.getElementById('cat').value ='';
+
+    const parent = document.getElementById('listuser');
+    const child=`<li id=${user._id}> ${user.amount} - ${user.description} - ${user.category} 
+<button onClick=deleteUser('${user._id}')>Delete Expense</button>
+<button onClick=edit('${user._id}','${user.amount}','${user.description}','${user.category}')>Edit Expense</button></li>`
+           parent.innerHTML=parent.innerHTML+child;
 }
+window.addEventListener('DOMContentLoaded', getRest)
+async function getRest()
+   {
+    try
+    {
 
-window.addEventListener("DOMContentLoaded", () => {
-
-    axios.get("https://crudcrud.com/api/5a65cc46a535451b91359d56767c56fb/expenseData")
-    .then((response) => {
-        console.log(response);
-        for (var i = 0; i < response.data.length; i++) {
-            showDetailsOnScreen(response.data[i]);
-        }
-    
-    //console.log(response)
-    })
-    .catch((err) => console.log(err))
-    //})
-
-
-    // Object.keys(localStorage).forEach((key) => {
-    
-    //     const stringifiedDetails = localStorage.getItem(key);
-    //     const details = JSON.parse(stringifiedDetails);
-    //     showDetailsOnScreen(details);
-    // })
-    
-    })
-
-function showDetailsOnScreen(expense) {
-    if (localStorage.getItem(expense.expenseAmount !== null)) {
-        removeUserFromScreen(expense.expenseAmount);
+       const response=await axios.get("https://crudcrud.com/api/5a65cc46a535451b91359d56767c56fb/expense")
+       for(let i=0;i<response.data.length;i++)
+        {
+            showUserOnScreen(response.data[i]);
+        } 
     }
-    
-    const parentNode = document.getElementById("listDetails");
+    catch(err)
+    {
+        document.body.innerHTML=document.body.innerHTML+"<h4>Something wrong on get</h4>"
+        console.log(err);
+    }
+    }
+    async function deleteUser(ID)
+   {
+    try
+    {
 
-    const childHTML = `<li id=${expense._id}>${expense.expenseAmount} : ${expense.expenseCategory}
-    : ${expense.expenseDescription}
-    <button onclick=deleteUser("${expense._id}")> Delete User </button>
-    <button onclick=editDetails("${expense.expenseAmount}","${expense.expenseCategory}","${expense.expenseDescription}","${expense._id}")>
-    Edit Details</button> </li>`;
-    parentNode.innerHTML = parentNode.innerHTML + childHTML;
+       const response=await axios.delete(`https://crudcrud.com/api/5a65cc46a535451b91359d56767c56fb/expense/${ID}`)
+       console.log(response.data);
+       console.log(ID);
+       removeUserFromScreen(ID);
+    }
+    catch(err)
+    {
+        document.body.innerHTML=document.body.innerHTML+"<h4>Something wrong on delete</h4>"
+        console.log(err);
+    }
+    }
+
+function removeUserFromScreen(Idd){
+    console.log(Idd)
+    const parentNode = document.getElementById('listuser');
+    const childNodeToBeDeleted = document.getElementById(Idd);
+    console.log("childnode is "+childNodeToBeDeleted)
+    if(childNodeToBeDeleted) {
+        parentNode.removeChild(childNodeToBeDeleted)
+    }
 }
-
-// Edit user details
-
-function editDetails(amount,category,description,userId) {
-    document.getElementById("amount").value = amount;
-    document.getElementById("category").value = category;
-    document.getElementById("desc").value = description;
-    deleteUser(userId);
-}
-
-// Delete User
-
-function deleteUser(userId) {
-
-    axios.delete(`https://crudcrud.com/api/5a65cc46a535451b91359d56767c56fb/expenseData/${userId}`)
-    .then((response) => {
-        removeUserFromScreen(userId);
-     //showUsersOnScreen(response.data);
-     //console.log(response)
- })
-    .catch((err) => console.log(err))
-
-
-
-    //localStorage.removeItem(amount);
-    //removeUserFromScreen(amount);
-}
-
-// Remove user from screen
-function removeUserFromScreen(userId) {
-const parentNode = document.getElementById("listDetails");
-const deleteChild = document.getElementById(userId);
-if(deleteChild) {
-    parentNode.removeChild(deleteChild);
- }
-}
+ //edituser
+function edit(ids,amoun, descri, catego)
+{
+    document.getElementById('amt').value = amoun;
+    document.getElementById('desc').value = descri;
+    document.getElementById('cat').value =catego;
+    deleteUser(ids)
+  }
