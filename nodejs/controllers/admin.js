@@ -26,7 +26,7 @@ exports.getEditProduct = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findById(prodId, (product) => {
     if (!product) {
-      res.redirect("/");
+      return res.redirect("/");
     }
     res.render("admin/edit-product", {
       pageTitle: "Edit Product",
@@ -42,12 +42,12 @@ exports.postEditProduct = (req, res, next) => {
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
-  const updatedDescription = req.body.description;
+  const updatedDesc = req.body.description;
   const updatedProduct = new Product(
     prodId,
     updatedTitle,
     updatedImageUrl,
-    updatedDescription,
+    updatedDesc,
     updatedPrice
   );
   updatedProduct.save();
